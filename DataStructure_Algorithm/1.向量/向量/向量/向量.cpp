@@ -2,7 +2,7 @@
 //
 
 #include <iostream>
-#define DEFAULT_CAPACITY  3
+#define DEFAULT_CAPACITY  3  //默认的最小容量
 typedef int Rank;  //疑问1：为什么用Rank代替int?
 template <typename T>
 class Vector
@@ -40,21 +40,34 @@ public:
     {
         copyFrom(A, lo, hi);
     }
-    Vector(Vector<T> const& V)
+    Vector(Vector<T> const& V)      //向量的整体复制初始化
     {
         copyFrom(V._elem, 0, V._size);
     }
-    Vector(Vector<T> const& V, Rank lo, Rank hi)
+    Vector(Vector<T> const& V, Rank lo, Rank hi)        //向量的部分复制
     {
         copyFrom(V._elem, lo, hi);
     }
 
-    void PrintVector()
+    void PrintVector()    //打印向量
     {
         for (int i = 0; i < _size; ++i)
         {
             std::cout << _elem[i] << std::endl;
         }
+    }
+
+    void expand()
+    {
+        if (_size < _capacity) return; //向量空间足够用，不需要扩容
+        if (_capacity < DEFAULT_CAPACITY) _capacity = DEFAULT_CAPACITY;//选取最大的空间作为数组的空间
+        T* oldElem = _elem;//保存下当前的数组
+        _elem = new T[_capacity << 1];//对数组扩容一倍
+        for (int i = 0; i < _size; ++i)
+        {
+            _elem[i] = oldElem[i];
+        }
+        delete[]oldElem;
     }
 
 
