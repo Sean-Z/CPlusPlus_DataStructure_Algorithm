@@ -12,6 +12,9 @@ protected:
     int _capacity;  //数组容量
     T* _elem;       //数据存储位置
 
+    /*1.复制初始化
+    注意区间lo和hi是左闭右开这一个约定俗成
+    */
     void copyFrom(T const* A, Rank lo, Rank hi)
     {
         _elem = new T[_capacity = 2 * (hi - lo)];
@@ -56,7 +59,9 @@ public:
             std::cout << _elem[i] << std::endl;
         }
     }
-
+    //2.动态扩容
+    //注意该方法的时间复杂度为O(n)
+    //了解分摊时间复杂度的计算
     void expand()
     {
         if (_size < _capacity) return; //向量空间足够用，不需要扩容
@@ -70,7 +75,48 @@ public:
         delete[]oldElem;
     }
 
+    //3.直接引用元素
+    //重载方括号
+    //由于返回值是引用，因此可以作为左值使用  V[i] = 10;
 
+    T& operator[](Rank r) const
+    {
+        return _elem[r];
+    }
+
+    //4.插入
+    //注意扩容的问题
+    //注意元素后移是从最后一个元素往前进行后移，防止数据被覆盖
+    Rank Insert(Rank r, T const& e)
+    {
+        expand();//如果有必要，先扩容
+        for (int i = _size; i > r; ++i)
+        {
+            _elem[r] = _elem[r - 1];
+        }
+        _elem[r] = e;
+        _size++;
+        return r;
+    }
+
+    //5.区间删除
+    //
+    int Remove(Rank lo, Rank hi)
+    {
+        if (lo == hi) return 0;
+        while (hi < _size)
+            _elem[lo++] = _elem[hi++];
+        _size = lo;
+        return hi - lo;
+    }
+    //6.单个元素删除,
+    //使用区间删除思想，时间复杂度更小
+    T remove(Rank r)
+    {
+        T e = _elem[r];
+        remove(r, r + 1);
+        return e;
+    }
 };
 
 int main()
